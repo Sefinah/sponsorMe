@@ -1,24 +1,19 @@
 import { signinService } from "../services/signin.service.js"
+import { sendResponse } from "../utils/sendresponse.js"
 
 
 export const signin = async (req, res) =>{
     const {email, password} = req.body
     try {
         if(!email || !password){
-            return res.status(400).json({
-                message: "all fields required"
-            })
+            return sendResponse(res, 400, "all fields required")
         }
         const result = await signinService({email, password})
-        return res.status(200).json({
-            message: 'signin successful',
-            data: result
-        })
+        return sendResponse(res, 200, "signin successful", result)
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({
-            message: 'signin failed',
-            error: error.message
-        })
+        const message = error.message || 'something went wrong'
+        return sendResponse(res, 500, message)
     }
 }

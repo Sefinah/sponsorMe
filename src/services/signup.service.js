@@ -18,7 +18,7 @@ export const employerSignupService = async (data)=> {
     const userResult = await client.query (`
         INSERT INTO users (first_name, last_name, email, role, password)
         VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, first_name, last_name, email, role, password`,
+        RETURNING id, first_name, last_name, email, role`,
         [data.firstName, data.lastName, data.email, data.role, hashedPassword])
         const user = userResult.rows[0]
         // insert into employersProfileTable
@@ -65,7 +65,7 @@ export const jobSeekerSignupService = async (data)=> {
     const userResult = await client.query (`
         INSERT INTO users (first_name, last_name, email, role, password)
         VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, first_name, last_name, email, role, password`,
+        RETURNING id, first_name, last_name, email, role`,
         [data.firstName, data.lastName, data.email, data.role, hashedPassword])
         const user = userResult.rows[0]
         const seekerResult = await client.query(`
@@ -95,4 +95,39 @@ export const jobSeekerSignupService = async (data)=> {
         client.release()
     }
     
+}
+
+
+export const adminSignupService = async (data) => {
+    console.log(data)
+    const client = await pool.connect()
+    try {
+        const emailExist = await client.query('SELECT * FROM users WHERE email = $1', [data.email])
+        console.log(emailExist.rows)
+        if (emailExist.rows.length > 0) {
+            throw new Error('Email already exist')
+        }
+        const hashedPassword = await bcrypt.hash(data.password, 10)
+        await client.query('BEGIN')
+        const userResult = await client.query(`
+            INSERT INTO users (first_name, last_name, email, role, password)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id, first_name, last_name, email, role`,
+            [data.firstName, data.lastName, data.email, data.role, hashedPassword])
+        const user = userResult.rows[0]
+        await client.query('COMMIT')
+        return {
+            id: user.id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            role: user.role
+        }
+    } catch (error) {
+        await client.query('ROLLBACK')
+        console.log(error)
+        throw error
+    } finally {
+        client.release()
+    }
 }

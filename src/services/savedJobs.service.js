@@ -19,15 +19,41 @@ export const saveJobService = async (userId, jobId) => {
     }
 }
 
-export const getSavedJobsService = async (userId) => {
+export const getSavedJobsService = async (userId, page, perPage) => {
     try {
+        page = Math.max(1, parseInt(page) || 1)
+        perPage = Math.min(100, Math.max(1, parseInt(perPage) || 10))
+        const offSet = (page - 1) * perPage
+
+        const conditions = [`saved_jobs.user_id = $1`]
+        const params = [userId]
+        let paramIndex = 2
+
+        const whereClause = `WHERE ${conditions.join(' AND ')}`
+        const countResult = await pool.query(`SELECT COUNT(*) FROM saved_jobs ${whereClause}`, params)
+        const total = parseInt(countResult.rows[0].count)
         const result = await pool.query(`
             SELECT saved_jobs.*, jobs.title, jobs.location, jobs.salary_min, jobs.salary_max, jobs.employment_type, jobs.visa_type
             FROM saved_jobs
             INNER JOIN jobs ON saved_jobs.job_id = jobs.id
-            WHERE saved_jobs.user_id = $1`, [userId])
+            ${whereClause}
+            ORDER BY saved_jobs.created_at DESC
+            LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+            [...params, perPage, offSet])
+
         console.log(result.rows)
-        return result.rows
+        
+        return {
+            data: result.rows,
+            pagination: {
+                page,
+                perPage,
+                total,
+                totalPages: Math.ceil(total / perPage),
+                hasNextPage: page * perPage < total,
+                hasPreviousPage: page > 1
+            }
+        }
     } catch (error) {
         throw error
     }

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 export const generateToken = async (userId, role) => {
-    const myJwtSecret = "gyiuwndgeun5678nuinbgtb"
+    const myJwtSecret = process.env.JWT_SECRET
     try {
         const payload = {
             user: {userId, role}
@@ -11,7 +11,7 @@ export const generateToken = async (userId, role) => {
         })
         return token
     } catch (error) {
-        console.log
-        return new Error ('jwt error')
+        console.log(error)
+        throw error
     }
 }

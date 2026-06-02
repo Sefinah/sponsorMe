@@ -5,7 +5,7 @@ import { getEmployerAnalytics, getJobAnalytics } from "../controllers/analytics.
 
 const router = Router()
 
-router.get("/analytics/employer", verifyToken, verifyRole(["employer"]), getEmployerAnalytics)
-router.get("/analytics/jobs/:id", verifyToken, verifyRole(["employer"]), getJobAnalytics)
+router.get("/analytics/employer", verifyToken, verifyRole(["employer", "admin"]), getEmployerAnalytics)
+router.get("/analytics/jobs/:id", verifyToken, verifyRole(["employer", "admin"]), getJobAnalytics)
 
 export default router

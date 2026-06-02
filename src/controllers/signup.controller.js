@@ -1,4 +1,4 @@
-import { employerSignupService, jobSeekerSignupService } from "../services/signup.service.js"
+import { adminSignupService, employerSignupService, jobSeekerSignupService } from "../services/signup.service.js"
 import { sendResponse } from "../utils/sendresponse.js"
 
 
@@ -10,7 +10,7 @@ export const employerSignup = async (req, res) =>{
             return sendResponse(res, 400, "All fields required")
         }
         if (password.length < 15) {
-            return sendResponse(res, 400, "password must be at least 14 characters")
+            return sendResponse(res, 400, "password must be at least 15 characters")
         }
         const result = await employerSignupService ({firstName, lastName, email, role, password, companyName, companySize, industry, location})
             return sendResponse(res, 201, 'User created successfully', result)
@@ -24,6 +24,7 @@ export const employerSignup = async (req, res) =>{
 export const jobSeekerSignup = async (req, res) =>{
     try {
          console.log(req.file)
+         console.log('response for seeker signup')
         const {firstName, lastName, email, role, password, bio, skills, experience} = req.body
         if (!req.file){
             return sendResponse(res, 400, "Resume required")
@@ -33,13 +34,30 @@ export const jobSeekerSignup = async (req, res) =>{
             return sendResponse(res, 400, "All fields required")
         }
         if (password.length < 15) {
-            return sendResponse(res, 400, "password must be at least 14 characters")
+            return sendResponse(res, 400, "password must be at least 15 characters")
         }
         const resumePath = req.file.path
        
         const result = await jobSeekerSignupService ({firstName, lastName, email, role, password, bio, skills, experience, resumePath})
             return sendResponse(res, 201, 'User created successfully', result)
             
+    } catch (error) {
+        const message = error.message || 'something went wrong'
+        return sendResponse(res, 500, message)
+    }
+}
+
+export const adminSignup = async (req, res) => {
+    try {
+        const { firstName, lastName, email, role, password } = req.body
+        if (!firstName || !lastName || !email || !role || !password) {
+            return sendResponse(res, 400, "All fields required")
+        }
+        if (password.length < 15) {
+            return sendResponse(res, 400, "password must be at least 15 characters")
+        }
+        const result = await adminSignupService({ firstName, lastName, email, role, password })
+        return sendResponse(res, 201, "Admin created successfully", result)
     } catch (error) {
         const message = error.message || 'something went wrong'
         return sendResponse(res, 500, message)

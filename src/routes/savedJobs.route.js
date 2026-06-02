@@ -5,8 +5,8 @@ import { saveJob, getSavedJobs, deleteSavedJob } from "../controllers/savedJobs.
 
 const router = Router()
 
-router.post("/saved-jobs", verifyToken, verifyRole(["job_seeker"]), saveJob)
-router.get("/saved-jobs", verifyToken, verifyRole(["job_seeker"]), getSavedJobs)
-router.delete("/saved-jobs/:jobId", verifyToken, verifyRole(["job_seeker"]), deleteSavedJob)
+router.post("/saved-jobs", verifyToken, verifyRole(["job_seeker", "admin"]), saveJob)
+router.get("/saved-jobs", verifyToken, verifyRole(["job_seeker", "admin"]), getSavedJobs)
+router.delete("/saved-jobs/:jobId", verifyToken, verifyRole(["job_seeker", "admin"]), deleteSavedJob)
 
 export default router

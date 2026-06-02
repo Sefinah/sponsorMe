@@ -5,10 +5,10 @@ import { createJobs, deleteJob, getAllJobs, getJobId, updateJob } from "../contr
 
 
 const router = Router()
-router.post("/jobs", verifyToken, verifyRole(["employer"]), createJobs)
+router.post("/jobs", verifyToken, verifyRole(["employer", "admin"]), createJobs)
 router.get("/jobs", verifyToken, getAllJobs)
 router.get("/jobs/:id", verifyToken, getJobId )
-router.patch("/jobs/:id", verifyToken, verifyRole(["employer"]), updateJob )
-router.delete("/jobs/:id", verifyToken, verifyRole(["employer"]), deleteJob)
+router.patch("/jobs/:id", verifyToken, verifyRole(["employer", "admin"]), updateJob )
+router.delete("/jobs/:id", verifyToken, verifyRole(["employer", "admin"]), deleteJob)
 
 export default router

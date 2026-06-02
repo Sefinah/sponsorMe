@@ -16,8 +16,8 @@ export const seekerProfileTable = `
 CREATE TABLE IF NOT EXISTS seeker_profile(
 id SERIAL PRIMARY KEY,
 user_id INT REFERENCES users(id) ON DELETE CASCADE,
-bio VARCHAR(100),
-skills VARCHAR(100),
+bio TEXT,
+skills TEXT,
 experience VARCHAR(200),
 resume TEXT
 )
@@ -60,7 +60,7 @@ export const applicationTable = `
 CREATE TABLE IF NOT EXISTS applications(
 id SERIAL PRIMARY KEY,
 job_id INT REFERENCES jobs(id) ON DELETE CASCADE,
-seeker_id INT REFERENCES users(id) ON DELETE CASCADE,
+seeker_id INT REFERENCES seeker_profile(id) ON DELETE CASCADE,
 cover_letter TEXT,
 resume_url TEXT,
 status VARCHAR(50) DEFAULT 'pending',
@@ -87,28 +87,37 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 `
 
-export const addRoleConstraint = `
-ALTER TABLE users
-ADD CONSTRAINT role_check 
-CHECK (role IN ('job_seeker', 'employer'))
-`
-
 export const addExperienceLevelConstraint = `
+DO $$ 
+BEGIN 
+IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'experience_level_check') THEN 
 ALTER TABLE jobs
-ADD CONSTRAINT experience_leve_check
-CHECK (experience_level IN ('junior', 'mid', 'senior'))
+ADD CONSTRAINT experience_level_check
+CHECK (experience_level IN ('junior', 'mid', 'senior'));
+END IF;
+END $$;
 `
 
 export const addEmploymentTypeConstraint = `
+DO $$ 
+BEGIN 
+IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'employment_type_check') THEN 
 ALTER TABLE jobs
 ADD CONSTRAINT employment_type_check
-CHECK (employment_type IN ('full-time', 'part-time', 'secondment'))
+CHECK (employment_type IN ('full-time', 'part-time', 'secondment'));
+END IF;
+END $$;
 `
 
 export const addVisaTypeConstraint = `
+DO $$ 
+BEGIN 
+IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'visa_type_check') THEN 
 ALTER TABLE jobs
 ADD CONSTRAINT visa_type_check
-CHECK (visa_type IN ('Skilled Worker', 'Health and Care Worker'))
+CHECK (visa_type IN ('Skilled Worker', 'Health and Care Worker'));
+END IF;
+END $$;
 `
 
 export const addUpdatedAtToUsers = `
@@ -131,3 +140,10 @@ ALTER TABLE employer_profile
 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 `
 
+export const addRoleConstraint = `
+DO $$ BEGIN
+IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'role_check') THEN
+ALTER TABLE users ADD CONSTRAINT role_check CHECK (role IN ('job_seeker', 'employer', 'admin'));
+END IF;
+END $$;
+`

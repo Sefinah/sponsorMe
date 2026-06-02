@@ -37,7 +37,7 @@ export const verifyRole = (requiredRoles) => {
         try {
             const role = req.user.role
             if (!role) {
-                return res.status(404).json({
+                return res.status(403).json({
                     message: "role not found"
                 })
             }

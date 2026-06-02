@@ -5,10 +5,10 @@ import { getSeekerProfile, updateSeekerProfile, uploadResume, getSeekerById } fr
 import { upload } from "../middlewares/upload.js"
 
 const router = Router()
-router.post("/seekers/me/resume", verifyToken, verifyRole(["job_seeker"]), upload.single("resume"), uploadResume)
-router.get("/seekers/me", verifyToken, verifyRole(["job_seeker"]), getSeekerProfile)
-router.get("/seekers/:id", verifyToken, verifyRole(["employer"]), getSeekerById)
-router.patch("/seekers/me", verifyToken, verifyRole(["job_seeker"]), updateSeekerProfile)
+router.post("/seekers/me/resume", verifyToken, verifyRole(["job_seeker", "admin"]), upload.single("resume"), uploadResume)
+router.get("/seekers/me", verifyToken, verifyRole(["job_seeker", "admin"]), getSeekerProfile)
+router.get("/seekers/:id", verifyToken, verifyRole(["employer", "admin"]), getSeekerById)
+router.patch("/seekers/me", verifyToken, verifyRole(["job_seeker", "admin"]), updateSeekerProfile)
 
 
 export default router

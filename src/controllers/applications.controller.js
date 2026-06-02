@@ -1,4 +1,4 @@
-import { createApplicationService, deleteApplicationService, getMyApplicationsService, updateApplicationStatusService } from "../services/applications.service.js";
+import { createApplicationService, deleteApplicationService, getAllApplicationsService, getMyApplicationsService, updateApplicationStatusService } from "../services/applications.service.js";
 import { sendResponse } from "../utils/sendresponse.js";
 
 export const createApplication = async (req, res) => {
@@ -18,8 +18,9 @@ export const createApplication = async (req, res) => {
 
 export const getMyApplications = async (req, res) => {
     try {
+        const {page, perPage, status} = req.query
         const seekerId = req.user.userId
-        const result = await getMyApplicationsService(seekerId)
+        const result = await getMyApplicationsService(seekerId, page, perPage, status)
         return sendResponse(res, 200, "My Applications gotten successfully", result )
     } catch (error) {
        const message = error.message || 'Something went wrong'
@@ -27,11 +28,23 @@ export const getMyApplications = async (req, res) => {
     }
 }
 
+export const getAllApplications = async (req, res) => {
+    try {
+        const result = await getAllApplicationsService()
+        return sendResponse(res, 200, "all applications retrieved successfully", result)
+    } catch (error) {
+        const message = error.message || 'something went wrong'
+        return sendResponse(res, 500, message)
+    }
+}
+
 export const updateApplicationStatus = async (req, res) => {
     try {
         const id = req.params.id
+        const userId = req.user.userId
         const { status } = req.body
-        const result = await updateApplicationStatusService (id, { status })
+        console.log(req.body)
+        const result = await updateApplicationStatusService(id, userId, { status })
         return sendResponse(res, 200, "application status updated successfully", result)
     } catch (error) {
         const message = error.message || 'something went wrong'

@@ -16,22 +16,6 @@ export const getCompanyByIdService = async (id) => {
     }
 }
 
-export const createCompanyService = async (userId, data) => {
-    try {
-        const result = await pool.query(`
-            UPDATE employer_profile SET
-            company_name = COALESCE ($1, company_name),
-            company_size = COALESCE ($2, company_size),
-            industry = COALESCE ($3, industry),
-            location = COALESCE ($4, location)
-            WHERE user_id = $5 RETURNING *`,
-            [data.companyName, data.companySize, data.industry, data.location, userId])
-        console.log(result.rows)
-        return result.rows
-    } catch (error) {
-        throw error
-    }
-}
 
 export const updateCompanyService = async (id, userId, data) => {
     try {

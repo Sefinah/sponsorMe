@@ -24,8 +24,7 @@ export const signinService = async (data) =>{
                     firstName: user.first_name,
                     lastName: user.last_name,
                     email: user.email,
-                    role: user.role,
-                    password: user.password
+                    role: user.role
                 },
                 token: token
             }

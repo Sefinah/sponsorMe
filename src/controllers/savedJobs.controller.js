@@ -19,7 +19,8 @@ export const saveJob = async (req, res) => {
 export const getSavedJobs = async (req, res) => {
     try {
         const userId = req.user.userId
-        const result = await getSavedJobsService(userId)
+        const { page, perPage } = req.query
+        const result = await getSavedJobsService(userId, page, perPage)
         return sendResponse(res, 200, "saved jobs retrieved successfully", result)
     } catch (error) {
         const message = error.message || 'something went wrong'
