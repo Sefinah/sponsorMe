@@ -23,14 +23,14 @@ app.use(cors({
     allowedHeaders: ["Authorization", "Content-Type"]
     
 }))
-app.use(authRoute)
-app.use(jobsRoute)
-app.use(applicationsRoute)
-app.use(seekerRoute)
-app.use(companyRoute)
-app.use(analyticsRoute)
-app.use(savedJobsRoute)
-app.use(notificationRoute)
+app.use("api/v1", authRoute)
+app.use("api/v1", jobsRoute)
+app.use("api/v1", applicationsRoute)
+app.use("api/v1", seekerRoute)
+app.use("api/v1", companyRoute)
+app.use("api/v1", analyticsRoute)
+app.use("api/v1", savedJobsRoute)
+app.use("api/v1", notificationRoute)
 
 
 // 404 catch all middleware
