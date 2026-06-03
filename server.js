@@ -9,12 +9,20 @@ import companyRoute from './src/routes/company.route.js'
 import analyticsRoute from './src/routes/analytics.route.js'
 import savedJobsRoute from './src/routes/savedJobs.route.js'
 import notificationRoute from './src/routes/notifications.route.js'
+import cors from 'cors'
 
 dotenv.config()
 
 const app = express()
 app.use(express.json())
 
+const allowedOrigins = ["http://localhost:5173", "https://sponsor-me-gamma.vercel.app"]
+app.use(cors({
+    origin: allowedOrigins, 
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type"]
+    
+}))
 app.use(authRoute)
 app.use(jobsRoute)
 app.use(applicationsRoute)
